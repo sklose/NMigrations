@@ -1,0 +1,92 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{03B4840D-5BEE-4F4F-9E76-63EF9B14E853}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NMigrations.Test</RootNamespace>
+    <AssemblyName>NMigrations.Test</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Transactions" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BaseTest.cs" />
+    <Compile Include="ColumnTest.cs" />
+    <Compile Include="DatabaseTest.cs" />
+    <Compile Include="EngineTest.cs" />
+    <Compile Include="IMigrationExtensionsTest.cs" />
+    <Compile Include="Mockups\MockDbCommand.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Mockups\MockDbConnection.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Mockups\MockDbParameter.cs" />
+    <Compile Include="Mockups\MockDbProviderFactory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Mockups\MockDbTransaction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ObjectExtensionsTest.cs" />
+    <Compile Include="OptionsParserTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueueExtensionsTest.cs" />
+    <Compile Include="SqlServerProviderTest.cs" />
+    <Compile Include="TableTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NMigrations.Shell\NMigrations.Shell.csproj">
+      <Project>{F466951A-0D3F-4913-B836-76AD1DDBF990}</Project>
+      <Name>NMigrations.Shell</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NMigrations\NMigrations.csproj">
+      <Project>{0E4D5288-517B-4E3F-A6EB-5F587A6A8DD3}</Project>
+      <Name>NMigrations</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Shadow Include="Test References\NMigrations.accessor" />
+  </ItemGroup>
+  <ItemGroup>
+    <Shadow Include="Test References\NMigrations.Shell.accessor" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0E4D5288-517B-4E3F-A6EB-5F587A6A8DD3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NMigrations</RootNamespace>
+    <AssemblyName>NMigrations</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Transactions" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Column.cs" />
+    <Compile Include="Constraint.cs" />
+    <Compile Include="Core\AfterMigrationEventArgs.cs" />
+    <Compile Include="Core\AfterSqlEventArgs.cs" />
+    <Compile Include="Insert.cs" />
+    <Compile Include="MigrationDirection.cs" />
+    <Compile Include="ObjectExtensions.cs" />
+    <Compile Include="SqlStatement.cs" />
+    <Compile Include="Repository\MigrationHistoryRepository.cs" />
+    <Compile Include="Core\BeforeMigrationEventArgs.cs" />
+    <Compile Include="Core\BeforeSqlEventArgs.cs" />
+    <Compile Include="Core\Engine.cs" />
+    <Compile Include="Core\IMigrationExtensions.cs" />
+    <Compile Include="Repository\IMigrationHistoryRepository.cs" />
+    <Compile Include="Repository\MigrationHistoryItem.cs" />
+    <Compile Include="Database.cs" />
+    <Compile Include="Element.cs" />
+    <Compile Include="MigrationContext.cs" />
+    <Compile Include="SqlTypes.cs" />
+    <Compile Include="Sql\GenericSqlProvider.cs" />
+    <Compile Include="Sql\DatabaseSqlProcessor.cs" />
+    <Compile Include="Sql\ISqlProcessor.cs" />
+    <Compile Include="Sql\QueueExtensions.cs" />
+    <Compile Include="Sql\SqlProviderFactory.cs" />
+    <Compile Include="Sql\ISqlProvider.cs" />
+    <Compile Include="Sql\SqlProviderAttribute.cs" />
+    <Compile Include="Sql\MySql\MySqlProvider.cs" />
+    <Compile Include="Sql\SqlServer\SqlServerProvider.cs" />
+    <Compile Include="Sql\SqlServer\TableExtensions.cs" />
+    <Compile Include="Sql\TypeExtensions.cs" />
+    <Compile Include="ForeignKeyConstraint.cs" />
+    <Compile Include="ForeignKeyConstraintPropagation.cs" />
+    <Compile Include="Index.cs" />
+    <Compile Include="IMigration.cs" />
+    <Compile Include="MigrationAttribute.cs" />
+    <Compile Include="Modifier.cs" />
+    <Compile Include="PrimaryKeyConstraint.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Table.cs" />
+    <Compile Include="UniqueConstraint.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
