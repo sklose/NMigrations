@@ -114,14 +114,18 @@ namespace NMigrations
             set;
         }
 
+        #endregion
+
+        #region Public Properties
+
         /// <summary>
-        /// Gets or sets the engine's context.
+        /// Gets or sets the migration context.
         /// </summary>
-        /// <value>The engine's context.</value>
-        internal MigrationContext Context
+        /// <value>The migration context.</value>
+        public MigrationContext Context
         {
             get;
-            set;
+            internal set;
         }
 
         #endregion
