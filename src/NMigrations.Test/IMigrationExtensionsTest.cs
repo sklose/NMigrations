@@ -64,7 +64,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="GetVersion"/> method returns the
         /// version stored in the <see cref="MigrationAttribute"/>.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void GetVersionTest()
         {
             IMigration migration = new MyTestMigration();
@@ -78,7 +78,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="GetName"/> method returns the name
         /// of the class without "Migration" suffix.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void GetNameTest()
         {
             IMigration migration = new MyTestMigration();

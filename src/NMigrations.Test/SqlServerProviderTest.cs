@@ -54,7 +54,7 @@ namespace NMigrations.Test
         /// Checkes that the <see cref="Insert"/> method generates the
         /// appropriate INSERT SQL statement(s).
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         [DeploymentItem("NMigrations.dll")]
         public void InsertTest()
         {
@@ -77,7 +77,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="GetQuerySeparator"/> method returns
         /// the query separator used by SQL Server.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void GetQuerySeparatorTest()
         {
             Assert.AreEqual("GO", Target.GetQuerySeparator());
@@ -87,7 +87,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="EscapeTableName"/> method escapes
         /// table names appropriately.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         [DeploymentItem("NMigrations.dll")]
         public void EscapeTableNameTest()
         {
@@ -98,7 +98,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="EscapeConstraintName"/> method escapes
         /// constraint names appropriately.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         [DeploymentItem("NMigrations.dll")]
         public void EscapeConstraintNameTest()
         {
@@ -109,7 +109,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="EscapeColumnName"/> method escapes
         /// column names appropriately.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         [DeploymentItem("NMigrations.dll")]
         public void EscapeColumnNameTest()
         {
@@ -119,7 +119,7 @@ namespace NMigrations.Test
         /// <summary>
         ///A test for BuildDataType
         ///</summary>
-        [TestMethod()]
+        [TestMethod]
         [DeploymentItem("NMigrations.dll")]
         public void BuildDataTypeTest()
         {
@@ -244,7 +244,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="BuildAutoIncrement"/> methods
         /// generates the appropriate SQL fragment.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         [DeploymentItem("NMigrations.dll")]
         public void BuildAutoIncrementTest()
         {
@@ -255,7 +255,112 @@ namespace NMigrations.Test
             Assert.AreEqual("IDENTITY(5, 1)", sql);
 
             sql = Target.BuildAutoIncrement(5, 2);
-            Assert.AreEqual("IDENTITY(5, 2)", sql);
+            Assert.AreEqual("IDENTITY(5, 2)", sql);            
+        }
+
+        /// <summary>
+        /// Checks that the <see cref="AddForeignKeyConstraint"/> method
+        /// generates the appropriate SQL command.
+        /// </summary>
+        [TestMethod]
+        public void AddForeignKeyConstraintTest()
+        {
+            Database db = new Database(new MockMigrationContext(Target));
+            db.AlterTable("MyTable").AddForeignKeyConstraint("MyFK", "MyColumn", "MyRelatedTable", "MyRelatedColumn");
+            var fk = db.MigrationSteps.FirstOrDefault(ms => ms is ForeignKeyConstraint) as ForeignKeyConstraint;
+
+            string[] sql = Target.AddForeignKeyConstraint(fk).ToArray();
+            Assert.AreEqual(1, sql.Length);
+            Assert.AreEqual("ALTER TABLE [MyTable] ADD CONSTRAINT [MyFK] FOREIGN KEY ([MyColumn]) REFERENCES [MyRelatedTable] ([MyRelatedColumn]);", sql[0]);
+        }
+
+        /// <summary>
+        /// Checks that the <see cref="AddPrimaryKeyConstraint"/> method
+        /// generates the appropriate SQL command.
+        /// </summary>
+        [TestMethod]
+        public void AddPrimaryKeyConstraintTest()
+        {
+            Database db = new Database(new MockMigrationContext(Target));
+            db.AlterTable("MyTable").AddPrimaryKeyConstraint("MyPK", new string[] { "MyColumn1", "MyColumn2" });
+            var pk = db.MigrationSteps.FirstOrDefault(ms => ms is PrimaryKeyConstraint) as PrimaryKeyConstraint;
+
+            string[] sql = Target.AddPrimaryKeyConstraint(pk).ToArray();
+            Assert.AreEqual(1, sql.Length);
+            Assert.AreEqual("ALTER TABLE [MyTable] ADD CONSTRAINT [MyPK] PRIMARY KEY ([MyColumn1], [MyColumn2]);", sql[0]);
+        }
+
+        /// <summary>
+        /// Checks that the <see cref="AddUniqueConstraint"/> method
+        /// generates the appropriate SQL command.
+        /// </summary>
+        [TestMethod]
+        public void AddUniqueConstraintTest()
+        {
+            Database db = new Database(new MockMigrationContext(Target));
+            db.AlterTable("MyTable").AddUniqueConstraint("MyPK", new string[] { "MyColumn1" });
+            var unique = db.MigrationSteps.FirstOrDefault(ms => ms is UniqueConstraint) as UniqueConstraint;
+
+            string[] sql = Target.AddUniqueConstraint(unique).ToArray();
+            Assert.AreEqual(1, sql.Length);
+            Assert.AreEqual("ALTER TABLE [MyTable] ADD CONSTRAINT [MyPK] UNIQUE ([MyColumn1]);", sql[0]);
+        }
+
+        /// <summary>
+        /// Checks that the appropriate CREATE TABLE statement is created for a
+        /// simple database schema.
+        /// </summary>
+        [TestMethod]
+        public void DatabaseModel1Test()
+        {
+            Database db = new Database(new MockMigrationContext(Target));
+            var t = db.AddTable("Customers");
+            t.AddColumn("CustomerID", SqlTypes.Int).PrimaryKey().AutoIncrement();
+            t.AddColumn("Firstname", SqlTypes.NVarChar, 32).NotNull();
+            t.AddColumn("Lastname", SqlTypes.NVarChar, 32).NotNull();
+
+            string[] sql = Target.GenerateSqlCommands(db).ToArray();
+            Assert.AreEqual(1, sql.Length);
+            Assert.AreEqual("CREATE TABLE [Customers] (" + Environment.NewLine +
+                "\t[CustomerID] INT NOT NULL IDENTITY(1, 1)," + Environment.NewLine +
+                "\t[Firstname] NVARCHAR(32) NOT NULL," + Environment.NewLine +
+                "\t[Lastname] NVARCHAR(32) NOT NULL," + Environment.NewLine +
+                "\tCONSTRAINT [PK_Customers] PRIMARY KEY ([CustomerID])" + Environment.NewLine +
+            ");", sql[0]);
+        }
+
+        /// <summary>
+        /// Checks that the right SQL commands are created for adding
+        /// and renaming a column.
+        /// </summary>
+        [TestMethod]
+        public void DatabaseModel2Test()
+        {
+            Database db = new Database(new MockMigrationContext(Target));
+            var t = db.AlterTable("Customers");            
+            t.AddColumn("Firstname", SqlTypes.NVarChar, 32).NotNull();
+            t.AlterColumn("Lastname").Rename("Surname");
+
+            string[] sql = Target.GenerateSqlCommands(db).ToArray();
+            Assert.AreEqual(2, sql.Length);
+            Assert.AreEqual("ALTER TABLE [Customers] ADD [Firstname] NVARCHAR(32) NOT NULL;", sql[0]);
+            Assert.AreEqual("EXEC sp_Rename '[Customers].[Lastname]', '[Surname]', 'COLUMN';", sql[1]);
+        }
+
+        /// <summary>
+        /// Checks that the right SQL command is generated if the only
+        /// operation is to add an index to a column.
+        /// </summary>
+        [TestMethod]
+        public void DatabaseModel3Test()
+        {
+            Database db = new Database(new MockMigrationContext(Target));
+            var t = db.AlterTable("Customers");
+            t.AlterColumn("Firstname").Index("MyIndex");
+
+            string[] sql = Target.GenerateSqlCommands(db).ToArray();
+            Assert.AreEqual(1, sql.Length);
+            Assert.AreEqual("CREATE INDEX [MyIndex] ON [Customers] ([Firstname]);", sql[0]);
         }
     }
 }

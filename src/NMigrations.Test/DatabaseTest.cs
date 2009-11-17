@@ -73,7 +73,7 @@ namespace NMigrations.Test
         /// <summary>
         /// Checks that the FlushChanges event is triggered.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void FlushTest()
         {
             bool triggered = false;
@@ -89,7 +89,7 @@ namespace NMigrations.Test
         /// <summary>
         /// Checks that a <see cref="Table"/> is added to the migration queue.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void DropTableTest()
         {
             Target.DropTable("MyTable");
@@ -106,7 +106,7 @@ namespace NMigrations.Test
         /// <summary>
         /// Checks that a <see cref="Table"/> is added to the migration queue.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void AlterTableTest()
         {
             Target.AlterTable("MyTable");
@@ -123,7 +123,7 @@ namespace NMigrations.Test
         /// <summary>
         /// Checks that a <see cref="Table"/> is added to the migration queue.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void AddTableTest()
         {
             Target.AddTable("MyTable");
@@ -141,7 +141,7 @@ namespace NMigrations.Test
         /// Checks that the constructor initializes the <see cref="MigrationSteps"/>
         /// queue and stores the <see cref="MigrationContext"/>.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void DatabaseConstructorTest()
         {
             MigrationContext context = new MigrationContext();

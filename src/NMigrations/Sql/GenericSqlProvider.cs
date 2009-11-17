@@ -431,70 +431,121 @@ namespace NMigrations.Sql
         protected virtual IEnumerable<string> AlterTable(Table table)
         {
             //
-            // Build SQL fragments for columns
+            // Build one (or more) SQL command(s) for each column
             //
-            var columnFragments = new List<string>();
-            table.Columns.ForEach(c => columnFragments.Add(BuildAlterTableColumn(c)));
-
-            //
-            // Build final commands
-            //
-            foreach (string column in columnFragments)
+            foreach (var column in table.Columns)
             {
-                yield return string.Format(
-                    "ALTER TABLE {0} {1};", EscapeTableName(table.Name), column
-                );
+                IEnumerable<string> sql = null;
+
+                //
+                // Add a column
+                //
+                if (column.Modifier == Modifier.Add)
+                {
+                    sql = BuildAddColumn(column);
+                }
+                //
+                // Drop a column
+                //
+                else if (column.Modifier == Modifier.Drop)
+                {
+                    sql = BuildDropColumn(column);
+                }
+                //
+                // Modify a column
+                //
+                else if (column.Modifier == Modifier.Alter)
+                {
+                    // Change data type
+                    if (column.DataType != null &&
+                        string.IsNullOrEmpty(column.NewName))
+                    {
+                        sql = BuildAlterColumnProperties(column);
+                    }
+                    // Change name
+                    else if (column.DataType == null &&
+                             !string.IsNullOrEmpty(column.NewName))
+                    {
+                        sql = BuildRenameColumn(column);
+                    }
+                    // Both
+                    else if (column.DataType != null &&
+                             !string.IsNullOrEmpty(column.NewName))
+                    {
+                        sql = BuildAlterColumnProperties(column).Union(
+                                BuildRenameColumn(column)
+                              );
+                    }
+                }
+
+                if (sql != null)
+                {
+                    foreach (var sqlCommand in sql)
+                    {
+                        yield return sqlCommand;
+                    }
+                }
             }
         }
 
         /// <summary>
-        /// Builds the SQL fragment that describes a column in an
-        /// ALTER TABLE statement.
+        /// Builds the SQL commands that adds the specified
+        /// <paramref name="Column"/> to its table.
         /// </summary>
         /// <param name="column">The column.</param>
-        /// <returns>The SQL fragment.</returns>
-        protected virtual string BuildAlterTableColumn(Column column)
+        /// <returns>The SQL commands.</returns>
+        protected virtual IEnumerable<string> BuildAddColumn(Column column)
         {
-            if (column.Modifier == Modifier.Add)
-            {
-                return "ADD " + BuildCreateTableColumn(column);
-            }
-            else if (column.Modifier == Modifier.Drop)
-            {
-                return "DROP COLUMN " + EscapeColumnName(column.Name);
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(column.NewName))
-                {
-                    //
-                    // Rename and new data type
-                    //
-                    if (column.DataType != null)
-                    {
-                        // Create Statement with new column name
-                        string create = BuildCreateTableColumn(column);
-                        create = create.Replace(EscapeColumnName(column.Name), EscapeColumnName(column.NewName));
-
-                        return "CHANGE " + EscapeColumnName(column.Name) + " " + create;
-                    }
-                    //
-                    // Rename
-                    //
-                    else
-                    {
-                        return "ALTER " + EscapeColumnName(column.Name) + " " + EscapeColumnName(column.NewName);
-                    }
-                }
-                //
-                // New data type
-                //
-                else
-                {
-                    return "MODIFY " + BuildCreateTableColumn(column);
-                }
-            }
+            yield return string.Format(
+                "ALTER TABLE {0} ADD {1};",
+                EscapeTableName(column.Table.Name),
+                BuildCreateTableColumn(column)
+            );
         }
+
+        /// <summary>
+        /// Builds the SQL commands that drops the specified
+        /// <paramref name="column"/> from its table.
+        /// </summary>
+        /// <param name="column">The column.</param>
+        /// <returns>The SQL commands.</returns>
+        protected virtual IEnumerable<string> BuildDropColumn(Column column)
+        {
+            yield return string.Format(
+                "ALTER TABLE {0} DROP COLUMN {1};",
+                EscapeTableName(column.Table.Name),
+                EscapeColumnName(column.Name)
+            );
+        }
+
+        /// <summary>
+        /// Builds the SQL commands that change the specified
+        /// <paramref name="column"/>'s data type.
+        /// </summary>
+        /// <param name="column">The column.</param>
+        /// <returns>The SQL commands.</returns>
+        protected virtual IEnumerable<string> BuildAlterColumnProperties(Column column)
+        {
+            yield return string.Format(
+                "ALTER TABLE {0} ALTER COLUMN {1};",
+                EscapeTableName(column.Table.Name),
+                BuildCreateTableColumn(column)
+            );
+        }
+
+        /// <summary>
+        /// Builds the SQL commands that rename the specified <paramref name="column"/>.
+        /// </summary>
+        /// <param name="column">The column.</param>
+        /// <returns>The SQL commands.</returns>
+        protected virtual IEnumerable<string> BuildRenameColumn(Column column)
+        {
+            yield return string.Format(
+                "ALTER TABLE {0} ALTER {1} {2};",
+                EscapeTableName(column.Table.Name),
+                EscapeColumnName(column.Name), EscapeColumnName(column.NewName)
+            );
+        }  
 
         #endregion
 

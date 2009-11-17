@@ -58,6 +58,7 @@
     <Compile Include="Mockups\MockDbTransaction.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Mockups\MockMigrationContext.cs" />
     <Compile Include="ObjectExtensionsTest.cs" />
     <Compile Include="OptionsParserTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

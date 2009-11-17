@@ -54,7 +54,7 @@ namespace NMigrations.Test
         /// Checks that all overloads of the <see cref="Insert"/> method create
         /// appropriate migration steps in the parent <see cref="Database"/> object.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void InsertTest()
         {
             var row1 = new { Field1 = "row1", Field2 = 1 };
@@ -87,7 +87,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="HasPrimaryKey"/> method returns <c>true</c>
         /// if a primary key constraint exists or <c>false</c> otherwise.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void HasPrimaryKeyTest()
         {
             Assert.IsFalse(Target.HasPrimaryKey());
@@ -99,7 +99,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="HasCompoundPrimaryKey"/> method returns
         /// <c>true</c> if a a compound primary key exists.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void HasCompoundPrimaryKeyTest_WithCompountPrimaryKey()
         {
             Assert.IsFalse(Target.HasCompoundPrimaryKey());
@@ -111,7 +111,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="HasCompoundPrimaryKey"/> method returns
         /// <c>false</c> if a a simple primary key exists.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void HasCompoundPrimaryKeyTest_WithSimplePrimaryKey()
         {
             Assert.IsFalse(Target.HasCompoundPrimaryKey());
@@ -123,7 +123,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="DropIndex"/> method creates an appropriate
         /// migration step in the parent <see cref="Database"/> object.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void DropIndexTest()
         {
             Target.DropIndex("MyIndex");
@@ -141,7 +141,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="DropConstraint"/> method creates an appropriate
         /// migration step in the parent <see cref="Database"/> object.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void DropConstraintTest()
         {
             Target.DropConstraint("MyConstraint");
@@ -159,7 +159,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="DropColumn"/> method adds the approriate
         /// column item the the <see cref="Table.Columns"/> list.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void DropColumnTest()
         {
             Target.DropColumn("MyColumn");
@@ -172,7 +172,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="AlterColumn"/> method adds the approriate
         /// column item the the <see cref="Table.Columns"/> list.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void AlterColumnTest()
         {
             Column c = Target.AlterColumn("MyColumn");
@@ -186,7 +186,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="AddPrimaryKeyConstraint"/> method adds an 
         /// <see cref="UniqueConstraint"/> to the <see cref="Database.MigrationSteps"/> queue.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void AddUniqueConstraintTest()
         {
             UniqueConstraint uc = Target.AddUniqueConstraint("MyConstraint", "MyColumn");
@@ -203,7 +203,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="AddPrimaryKeyConstraint"/> method adds an 
         /// <see cref="PrimaryKeyConstraint"/> to the <see cref="Database.MigrationSteps"/> queue.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void AddPrimaryKeyConstraintTest()
         {
             PrimaryKeyConstraint pk = Target.AddPrimaryKeyConstraint("MyConstraint", "MyColumn");
@@ -220,7 +220,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="AddPrimaryKeyConstraint"/> method adds an 
         /// <see cref="Index"/> to the <see cref="Database.MigrationSteps"/> queue.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void AddIndexTest()
         {
             Index idx = Target.AddIndex("MyIndex", "MyColumn");
@@ -237,7 +237,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="AddForeignKeyConstraint"/> method adds an 
         /// <see cref="ForeignKeyConstraint"/> to the <see cref="Database.MigrationSteps"/> queue.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void AddForeignKeyConstraintTest1()
         {
             ForeignKeyConstraint fk1 = Target.AddForeignKeyConstraint("MyConstraint", "MyColumn", "MyRelatedTable", "MyRelatedColumn");
@@ -270,7 +270,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="AddColumn"/> method adds an 
         /// <see cref="Column"/> to the <see cref="Database.Columns"/> list.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void AddColumnTest5()
         {
             var c1 = Target.AddColumn("MyColumn1", SqlTypes.Date);
@@ -369,7 +369,7 @@ namespace NMigrations.Test
         /// <summary>
         /// Checks that the constructor initializes all properties appropiatly.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void TableConstructorTest()
         {
             Database db = new Database(null);

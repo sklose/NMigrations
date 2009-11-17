@@ -57,6 +57,23 @@ namespace NMigrations.Sql.SqlServer
 
         #region Protected Methods
 
+        #region Table Operations
+
+        /// <summary>
+        /// Builds the SQL commands that rename the specified <paramref name="column"/>.
+        /// </summary>
+        /// <param name="column">The column.</param>
+        /// <returns>The SQL commands.</returns>
+        protected override IEnumerable<string> BuildRenameColumn(Column column)
+        {
+            yield return string.Format("EXEC sp_Rename '{0}.{1}', '{2}', 'COLUMN';",
+                EscapeTableName(column.Table.Name),
+                EscapeColumnName(column.Name), EscapeColumnName(column.NewName)
+            );
+        }
+
+        #endregion
+
         #region Data Types
 
         /// <summary>

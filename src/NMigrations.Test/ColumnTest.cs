@@ -59,7 +59,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="Unique"/> methods creates a
         /// <see cref="UniqueConstraint"/> in the migration steps queue.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void UniqueTest()
         {
             Target.Unique();
@@ -74,7 +74,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="Type"/> method sets the appropriate
         /// data type for the <see cref="Column"/> object.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void TypeTest()
         {
             Database db = new Database(new MigrationContext());
@@ -135,7 +135,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="Rename"/> method stores the
         /// new name for the column.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void RenameTest()
         {
             Assert.IsNull(Target.NewName);
@@ -147,7 +147,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="References"/> method creates a
         /// <see cref="ForeignKeyConstraint"/> in the migration steps queue.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void ReferencesTest()
         {
             Target.References("MyRelatedTable", "MyRelatedColumn");
@@ -167,7 +167,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="PrimaryKey"/> method creates a
         /// <see cref="PrimaryKeyConstraint"/> in the migration steps queue.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void PrimaryKeyTest()
         {
             Target.PrimaryKey();
@@ -183,7 +183,7 @@ namespace NMigrations.Test
         /// <summary>
         /// Checks that the <see cref="NotNull"/> method switches the nullable flag.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void NotNullTest()
         {
             Target.NotNull();
@@ -194,7 +194,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="PrimaryKey"/> method creates an
         /// <see cref="Index"/> in the migration steps queue.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void IndexTest()
         {
             Target.Index();
@@ -210,7 +210,7 @@ namespace NMigrations.Test
         /// <summary>
         /// Checks that the <see cref="Default"/> method stores the default value.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void DefaultTest()
         {
             Target.Default("MyDefaultValue");
@@ -221,7 +221,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="BelongsToPrimaryKey"/> method returns
         /// the appropriate value.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void BelongsToPrimaryKeyTest()
         {
             Assert.IsFalse(Target.BelongsToPrimaryKey());
@@ -266,7 +266,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="AutoIncrement"/> method sets the
         /// <see cref="IsAutoIncrement"/> flag.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void AutoIncrementWithoutParametersTest()
         {
             Target.AutoIncrement();
@@ -277,7 +277,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="AutoIncrement"/> method sets the
         /// <see cref="IsAutoIncrement"/> flag and stores the seed/step
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void AutoIncrementWithParametersTest()
         {
             Target.AutoIncrement(5, 2);
@@ -290,7 +290,7 @@ namespace NMigrations.Test
         /// Checks that the constructor initializes all private variables
         /// to their default values.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void ColumnConstructorTest()
         {
             Assert.IsTrue(Target.IsNullable);

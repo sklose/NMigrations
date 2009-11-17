@@ -208,7 +208,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="OnAfterMigration"/> method raises the
         /// <see cref="AfterMigration"/> event.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         [DeploymentItem("NMigrations.dll")]
         public void OnAfterMigrationTest()
         {

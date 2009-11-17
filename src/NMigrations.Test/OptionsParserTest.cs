@@ -98,7 +98,7 @@ namespace NMigrations.Test
         /// Checks that the <see cref="GetOptions"/> method returns the appropriate
         /// description of the valid command line options.
         /// </summary>
-        [TestMethod()]
+        [TestMethod]
         public void GetOptionsTest()
         {
             var options = Target.GetOptions();
