@@ -76,6 +76,12 @@ namespace NMigrations.Sql
                         commands = Insert(element as Insert);
                     // Alter + Drop are not supported
                 }
+                else if (element is Update)
+                {
+                    if (element.Modifier == Modifier.Alter)
+                        commands = Update(element as Update);
+                    // Add + Drop are not supported
+                }
                 else if (element is ForeignKeyConstraint)
                 {
                     if (element.Modifier == Modifier.Add)
@@ -585,6 +591,66 @@ namespace NMigrations.Sql
 
         #endregion
 
+        #region Update
+
+        /// <summary>
+        /// Generates the SQL statements that updates rows described by
+        /// the specified <paramref name="update"/> object.
+        /// </summary>
+        /// <param name="update">The update command.</param>
+        /// <returns>The SQL statements.</returns>
+        protected virtual IEnumerable<string> Update(Update update)
+        {
+            //
+            // Stringify column names and values
+            //
+            string[] setColumnNames = new string[update.Set.Count];
+            string[] setColumnValues = new string[update.Set.Count];
+            string[] whereColumnNames = new string[update.Where.Count];
+            string[] whereColumnValues = new string[update.Where.Count];
+
+            int i = 0;
+            foreach (var key in update.Set.Keys)
+            {
+                setColumnNames[i] = EscapeColumnName(key);
+                setColumnValues[i++] = FormatValue(update.Set[key]);
+            }
+
+            i = 0;
+            foreach (var key in update.Where.Keys)
+            {
+                whereColumnNames[i] = EscapeColumnName(key);
+                whereColumnValues[i++] = FormatValue(update.Where[key]);
+            }
+
+            //
+            // Combine to "column = value" pairs
+            //
+            string[] set = new string[setColumnNames.Length];
+            string[] where = new string[whereColumnNames.Length];
+
+            for (i = 0; i < set.Length; i++)
+            {
+                set[i] = string.Format("{0} = {1}", setColumnNames[i], setColumnValues[i]);
+            }
+
+            for (i = 0; i< where.Length; i++)
+            {
+                where[i] = string.Format("{0} = {1}", whereColumnNames[i], whereColumnValues[i]);
+            }
+
+            //
+            // Build up command
+            //
+            yield return string.Format("UPDATE {0} SET {1} WHERE {2};",
+                EscapeTableName(update.Table.Name),
+                string.Join(", ", set),
+                string.Join(" AND ", where)
+            );
+        }
+
+        #endregion
+
         #region Indices
 
         /// <summary>
@@ -796,6 +862,13 @@ namespace NMigrations.Sql
                 }
 
                 return StringQuotes + date.ToString(format, ci) + StringQuotes;
+            }
+            //
+            // Booleans
+            //
+            else if (value is bool)
+            {
+                return ((bool)value) ? "1" : "0";
             }
             //
             // Strings and anything else

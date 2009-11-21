@@ -405,6 +405,32 @@ namespace NMigrations
             return this;
         }
 
+        /// <summary>
+        /// Updates the specified rows described by the <paramref name="where"/>
+        /// argument with the new values specified by the <paramref name="set"/> argument.
+        /// </summary>
+        /// <param name="set">The columns new values.</param>
+        /// <param name="where">The update's where clause.</param>
+        /// <returns>The table.</returns>
+        public Table Update(Dictionary<string, object> set, Dictionary<string, object> where)
+        {
+            Database.MigrationSteps.Enqueue(new Update(this, set, where));
+            return this;
+        }
+
+        /// <summary>
+        /// Updates the specified rows described by the <paramref name="where"/>
+        /// argument with the new values specified by the <paramref name="set"/> argument.
+        /// </summary>
+        /// <param name="set">The columns to update as an anonymous object (properties are key/value pairs for row).</param>
+        /// <param name="where">The update's where clause as an anonymous object.</param>
+        /// <returns>The table.</returns>
+        public Table Update(object set, object where)
+        {
+            Database.MigrationSteps.Enqueue(new Update(this, set, where));
+            return this;
+        }
+
         #endregion
 
         #region Internal Methods

@@ -58,7 +58,7 @@ namespace NMigrations.Test
         [DeploymentItem("NMigrations.dll")]
         public void InsertTest()
         {
-            Database db = new Database(new MigrationContext());
+            Database db = new Database(new MockMigrationContext(Target));
             db.AlterTable("MyTable").Insert(
                 new 
                 { 
@@ -71,6 +71,33 @@ namespace NMigrations.Test
             string[] sql = Target.Insert(db.MigrationSteps.ToArray()[1] as Insert).ToArray();
             Assert.AreEqual(1, sql.Length);
             Assert.AreEqual("INSERT INTO [MyTable] ([MyColumn1], [MyColumn2], [MyColumn3]) VALUES('1970-02-24', 'Test', 23);", sql[0]);
+        }
+
+        /// <summary>
+        /// Checkes that the <see cref="Update"/> method generates the
+        /// appropriate UPDATE SQL statement.
+        /// </summary>
+        [TestMethod]
+        [DeploymentItem("NMigrations.dll")]
+        public void UpdateTest()
+        {
+            Database db = new Database(new MockMigrationContext(Target));
+            db.AlterTable("MyTable").Update(
+                new
+                {
+                    Column1 = "NewValue",
+                    Column2 = 3
+                },
+                new
+                {
+                    Column2 = 4,
+                    Column3 = true
+                }
+            );
+
+            string[] sql = Target.Update(db.MigrationSteps.ToArray()[1] as Update).ToArray();
+            Assert.AreEqual(1, sql.Length);
+            Assert.AreEqual("UPDATE [MyTable] SET [Column1] = 'NewValue', [Column2] = 3 WHERE [Column2] = 4 AND [Column3] = 1;", sql[0]);
         }
 
         /// <summary>

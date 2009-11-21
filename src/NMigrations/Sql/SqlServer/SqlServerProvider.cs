@@ -174,7 +174,6 @@ namespace NMigrations.Sql.SqlServer
             return string.Format("IDENTITY({0}, {1})", seed ?? 1, step ?? 1);
         }
 
-
         #endregion
 
         #region Escaping
