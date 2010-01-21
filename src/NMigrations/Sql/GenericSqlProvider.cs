@@ -164,7 +164,7 @@ namespace NMigrations.Sql
         /// <returns>The unqiue constraint name.</returns>
         public string GetUniqueConstraintName(string tableName, string[] columnNames)
         {
-            return "UQ_" + tableName + string.Join("", columnNames);
+            return "UQ_" + tableName + "_" + string.Join("", columnNames);
         }
 
         /// <summary>
