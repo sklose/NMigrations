@@ -74,6 +74,72 @@ namespace NMigrations.Sql.SqlServer
 
         #endregion
 
+        #region Constraints
+
+        /// <summary>
+        /// Enumerates the SQL commands that are necessary to drop
+        /// the specified primary key constraint (<paramref name="pk"/>).
+        /// </summary>
+        /// <param name="pk">The primary key constraint.</param>
+        /// <returns>The SQL commands.</returns>
+        protected override IEnumerable<string> DropPrimaryKeyConstraint(PrimaryKeyConstraint pk)
+        {
+            if (string.IsNullOrEmpty(pk.Name))
+            {
+                return new string[] {
+                    string.Format("ALTER TABLE {0} ALTER COLUMN {1} DROP IDENTITY;",
+                        EscapeTableName(pk.Table.Name),
+                        EscapeConstraintName(pk.Name)
+                    )
+                };
+            }
+            else
+            {
+                return base.DropPrimaryKeyConstraint(pk);
+            }
+        }
+
+        /// <summary>
+        /// Enumerates the SQL commands that are necessary to drop
+        /// the specified <paramref name="defaultConstraint"/>.
+        /// </summary>
+        /// <param name="defaultConstraint">The default constraint.</param>
+        /// <returns>The SQL commands.</returns>
+        protected override IEnumerable<string> DropDefaultConstraint(DefaultConstraint defaultConstraint)
+        {
+            IEnumerable<string> sql = null;
+            if (string.IsNullOrEmpty(defaultConstraint.Name))
+            {
+                sql = new string[]
+                {
+                    string.Format("DECLARE @{0}DefaultName VARCHAR(MAX);", defaultConstraint.ColumnName) +
+                    Environment.NewLine +
+                    string.Format("SELECT @{0}DefaultName = o2.name " +
+                        "FROM syscolumns c " +
+                        "JOIN sysobjects o ON c.id = o.id " +
+                        "JOIN sysobjects o2 ON c.cdefault = o2.id " +
+                        "WHERE o.name = {1} AND c.name = {2};",
+                        defaultConstraint.ColumnName,
+                        FormatValue(defaultConstraint.Table.Name),
+                        FormatValue(defaultConstraint.ColumnName)
+                    ) +
+                    Environment.NewLine +
+                    string.Format("EXEC('ALTER TABLE {0} DROP CONSTRAINT ' + @{1}DefaultName);",
+                        EscapeTableName(string.Format(defaultConstraint.Table.Name)),
+                        defaultConstraint.ColumnName
+                    )
+                };
+            }
+            else
+            {
+                sql = base.DropDefaultConstraint(defaultConstraint);
+            }
+
+            return sql;
+        }
+
+        #endregion
+
         #region Data Types
 
         /// <summary>

@@ -90,7 +90,40 @@ namespace NMigrations
         /// <returns>The column.</returns>
         public Column Default(object value)
         {
-            DefaultValue = value;
+            Table.AddDefaultConstraint(Name, value);
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the default value for this <see cref="Column"/>.
+        /// </summary>
+        /// <param name="name">The name of the default constraint.</param>
+        /// <param name="value">The default value.</param>
+        /// <returns>The column.</returns>
+        public Column Default(string name, object value)
+        {
+            Table.AddDefaultConstraint(name, Name, value);
+            return this;
+        }
+
+        /// <summary>
+        /// Drops the default value.
+        /// </summary>
+        /// <returns>The column.</returns>
+        public Column DropDefault()
+        {
+            Table.DropDefaultConstraintByColumnName(Name);
+            return this;
+        }
+
+        /// <summary>
+        /// Drops the default.
+        /// </summary>
+        /// <param name="name">The name of the default constraint.</param>
+        /// <returns>The column.</returns>
+        public Column DropDefault(string name)
+        {
+            Table.DropDefaultConstraint(name);
             return this;
         }
 
@@ -328,17 +361,7 @@ namespace NMigrations
         {
             get;
             set;
-        }
-
-        /// <summary>
-        /// Gets or sets the default value for this <see cref="Column"/>.
-        /// </summary>
-        /// <value>The default value.</value>
-        internal object DefaultValue
-        {
-            get;
-            set;
-        }
+        }     
 
         /// <summary>
         /// Gets or sets the column's data type.
@@ -449,11 +472,29 @@ namespace NMigrations
         /// </returns>
         internal ForeignKeyConstraint GetForeignKeyConstraint()
         {
-            var q = (from ms in Table.Database.MigrationSteps
-                     let c = ms as ForeignKeyConstraint
-                     where c != null && c.Table == Table &&
-                           c.ColumnNames.Contains(Name)
-                     select c);
+            var q = from ms in Table.Database.MigrationSteps
+                    let c = ms as ForeignKeyConstraint
+                    where c != null && c.Table == Table &&
+                          c.ColumnNames.Contains(Name)
+                    select c;
+
+            return q.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Gets the <see cref="DefaultConstraint"/> of this <see cref="Column"/>.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="DefaultConstraint"/> or <c>null</c> if
+        /// the <see cref="Column"/> doesn't have a <see cref="DefaultConstraint"/>.
+        /// </returns>
+        internal DefaultConstraint GetDefaultConstraint()
+        {
+            var q = from ms in Table.Database.MigrationSteps
+                    let c = ms as DefaultConstraint
+                    where c != null && c.Table == Table &&
+                          c.ColumnName == Name
+                    select c;
 
             return q.FirstOrDefault();
         }

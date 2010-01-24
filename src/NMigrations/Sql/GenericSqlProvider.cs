@@ -98,6 +98,14 @@ namespace NMigrations.Sql
                         commands = DropUniqueConstraint(element as UniqueConstraint);
                     // Alter is not supported
                 }
+                else if (element is DefaultConstraint)
+                {
+                    if (element.Modifier == Modifier.Add)
+                        commands = AddDefaultConstraint(element as DefaultConstraint);
+                    else if (element.Modifier == Modifier.Drop)
+                        commands = DropDefaultConstraint(element as DefaultConstraint);
+                    // Alter is not supported
+                }
                 else if (element is PrimaryKeyConstraint)
                 {
                     if (element.Modifier == Modifier.Add)
@@ -105,6 +113,12 @@ namespace NMigrations.Sql
                     else if (element.Modifier == Modifier.Drop)
                         commands = DropPrimaryKeyConstraint(element as PrimaryKeyConstraint);
                     // Alter is not supported
+                }
+                else if (element is Constraint)
+                {
+                    if (element.Modifier == Modifier.Drop)
+                        commands = DropConstraint(element as Constraint);
+                    // Add+ Alter are not supported
                 }
                 else if (element is SqlStatement)
                 {
@@ -168,6 +182,17 @@ namespace NMigrations.Sql
         }
 
         /// <summary>
+        /// Builds the name for a default constraint.
+        /// </summary>
+        /// <param name="tableName">Name of the table.</param>
+        /// <param name="columnName">The column name.</param>
+        /// <returns>The default constraint name.</returns>
+        public string GetDefaultConstraintName(string tableName, string columnName)
+        {
+            return "DF_" + tableName + "_" + columnName;
+        }
+
+        /// <summary>
         /// Builds the name for an index.
         /// </summary>
         /// <param name="tableName">Name of the table.</param>
@@ -180,7 +205,7 @@ namespace NMigrations.Sql
 
         #endregion
 
-        #region Proected Methods
+        #region Protected Methods
 
         #region Table Operations
 
@@ -276,9 +301,15 @@ namespace NMigrations.Sql
             // Default
             //
             string defaultValue = null;
-            if (column.DefaultValue != null)
+            var defaultConstraint = column.GetDefaultConstraint();
+            if (defaultConstraint != null)
             {
-                defaultValue = "DEFAULT " + FormatValue(column.DefaultValue);
+                defaultValue = string.Format("CONSTRAINT {0} DEFAULT {1}",
+                    EscapeConstraintName(defaultConstraint.Name),
+                    FormatValue(defaultConstraint.Value)
+                );
+
+                column.Table.Database.MigrationSteps.Remove(defaultConstraint);
             }
 
             //
@@ -441,7 +472,7 @@ namespace NMigrations.Sql
             //
             foreach (var column in table.Columns)
             {
-                IEnumerable<string> sql = null;
+                IEnumerable<string> sql = new string[] { };
 
                 //
                 // Add a column
@@ -462,25 +493,36 @@ namespace NMigrations.Sql
                 //
                 else if (column.Modifier == Modifier.Alter)
                 {
+                    // Change constraints
+                    var defaultConstraint = column.GetDefaultConstraint();
+                    if (defaultConstraint != null)
+                    {
+                        if (defaultConstraint.Modifier == Modifier.Drop)
+                        {
+                            sql = sql.Union(DropDefaultConstraint(defaultConstraint));
+                            column.Table.Database.MigrationSteps.Remove(defaultConstraint);
+                        }
+                    }
+
                     // Change data type
                     if (column.DataType != null &&
                         string.IsNullOrEmpty(column.NewName))
                     {
-                        sql = BuildAlterColumnProperties(column);
+                        sql = sql.Union(BuildAlterColumnProperties(column));
                     }
                     // Change name
                     else if (column.DataType == null &&
                              !string.IsNullOrEmpty(column.NewName))
                     {
-                        sql = BuildRenameColumn(column);
+                        sql = sql.Union(BuildRenameColumn(column));
                     }
                     // Both
                     else if (column.DataType != null &&
                              !string.IsNullOrEmpty(column.NewName))
                     {
-                        sql = BuildAlterColumnProperties(column).Union(
+                        sql = sql.Union(BuildAlterColumnProperties(column).Union(
                                 BuildRenameColumn(column)
-                              );
+                              ));
                     }
                 }
 
@@ -540,7 +582,7 @@ namespace NMigrations.Sql
         }
 
         /// <summary>
-        /// Builds the SQL commands that rename the specified <paramref name="column"/>.
+        /// Builds the SQL commands that renames the specified <paramref name="column"/>.
         /// </summary>
         /// <param name="column">The column.</param>
         /// <returns>The SQL commands.</returns>
@@ -551,7 +593,21 @@ namespace NMigrations.Sql
                 EscapeTableName(column.Table.Name),
                 EscapeColumnName(column.Name), EscapeColumnName(column.NewName)
             );
-        }  
+        }
+
+        /// <summary>
+        /// Builds the SQL commands that drops the default value for the specified <paramref name="column"/>.
+        /// </summary>
+        /// <param name="column">The column.</param>
+        /// <returns>The SQL commands.</returns>
+        protected virtual IEnumerable<string> BuildDropDefault(Column column)
+        {
+            yield return string.Format(
+                "ALTER TABLE {0} ALTER COLUMN {1} DROP DEFAULT;",
+                EscapeTableName(column.Table.Name),
+                EscapeColumnName(column.Name)
+            );
+        }
 
         #endregion
 
@@ -690,6 +746,8 @@ namespace NMigrations.Sql
 
         #endregion
 
+        #region Constraints
+
         #region Foreign Key Constraints
 
         /// <summary>
@@ -760,6 +818,41 @@ namespace NMigrations.Sql
 
         #endregion
 
+        #region Default Constraints
+
+        /// <summary>
+        /// Enumerates the SQL commands that are necessary to create
+        /// the specified <paramref name="defaultConstraint"/>.
+        /// </summary>
+        /// <param name="defaultConstraint">The default constraint.</param>
+        /// <returns>The SQL commands.</returns>
+        protected virtual IEnumerable<string> AddDefaultConstraint(DefaultConstraint defaultConstraint)
+        {
+            yield return string.Format(
+                "ALTER TABLE {0} ADD CONSTRAINT {1} DEFAULT({2}) FOR {3};",
+                EscapeTableName(defaultConstraint.Table.Name),
+                EscapeConstraintName(defaultConstraint.Name),
+                FormatValue(defaultConstraint.Value),
+                EscapeColumnName(defaultConstraint.ColumnName)
+            );
+        }
+
+        /// <summary>
+        /// Enumerates the SQL commands that are necessary to drop
+        /// the specified <paramref name="defaultConstraint"/>.
+        /// </summary>
+        /// <param name="defaultConstraint">The default constraint.</param>
+        /// <returns>The SQL commands.</returns>
+        protected virtual IEnumerable<string> DropDefaultConstraint(DefaultConstraint defaultConstraint)
+        {
+            yield return string.Format("ALTER TABLE {0} ALTER COLUMN {1} DROP DEFAULT;",
+                EscapeTableName(defaultConstraint.Table.Name),
+                EscapeConstraintName(defaultConstraint.Name)
+            );
+        }
+
+        #endregion
+
         #region Primary Key Constraints
 
         /// <summary>
@@ -786,9 +879,37 @@ namespace NMigrations.Sql
         /// <returns>The SQL commands.</returns>
         protected virtual IEnumerable<string> DropPrimaryKeyConstraint(PrimaryKeyConstraint pk)
         {
+            IEnumerable<string> sql = null;
+            if (!string.IsNullOrEmpty(pk.Name))
+            {
+                sql = DropConstraint(pk);
+            }
+            else
+            {
+                sql = new string[] {
+                    string.Format("ALTER TABLE {0} ALTER COLUMN {1} DROP PRIMARY KEY;",
+                        EscapeTableName(pk.Table.Name),
+                        EscapeConstraintName(pk.Name)
+                    )
+                };
+            }
+
+            return sql;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Enumerates the SQL commands that are necessary to drop
+        /// the specified <paramref name="constraint"/>.
+        /// </summary>
+        /// <param name="constraint">The constraint to drop.</param>
+        /// <returns>The SQL commands.</returns>
+        protected virtual IEnumerable<string> DropConstraint(Constraint constraint)
+        {
             yield return string.Format("ALTER TABLE {0} DROP CONSTRAINT {1};",
-                EscapeTableName(pk.Table.Name),
-                EscapeConstraintName(pk.Name)
+                EscapeTableName(constraint.Table.Name),
+                EscapeConstraintName(constraint.Name)
             );
         }
 

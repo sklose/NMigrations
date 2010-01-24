@@ -286,7 +286,6 @@ namespace NMigrations.Test
             Assert.AreEqual(SqlTypes.Date, c1.DataType);
             Assert.AreEqual(null, c1.AutoIncrementSeed);
             Assert.AreEqual(null, c1.AutoIncrementStep);
-            Assert.AreEqual(null, c1.DefaultValue);
             Assert.AreEqual(false, c1.IsAutoIncrement);
             Assert.AreEqual(true, c1.IsNullable);
             Assert.AreEqual(null, c1.Length);
@@ -300,7 +299,6 @@ namespace NMigrations.Test
             Assert.AreEqual(SqlTypes.Int, c2.DataType);
             Assert.AreEqual(null, c2.AutoIncrementSeed);
             Assert.AreEqual(null, c2.AutoIncrementStep);
-            Assert.AreEqual(null, c2.DefaultValue);
             Assert.AreEqual(false, c2.IsAutoIncrement);
             Assert.AreEqual(true, c2.IsNullable);
             Assert.AreEqual(null, c2.Length);
@@ -314,7 +312,6 @@ namespace NMigrations.Test
             Assert.AreEqual(SqlTypes.VarChar, c3.DataType);
             Assert.AreEqual(null, c3.AutoIncrementSeed);
             Assert.AreEqual(null, c3.AutoIncrementStep);
-            Assert.AreEqual(null, c3.DefaultValue);
             Assert.AreEqual(false, c3.IsAutoIncrement);
             Assert.AreEqual(true, c3.IsNullable);
             Assert.AreEqual(32, c3.Length);
@@ -328,7 +325,6 @@ namespace NMigrations.Test
             Assert.AreEqual(SqlTypes.Decimal, c4.DataType);
             Assert.AreEqual(null, c4.AutoIncrementSeed);
             Assert.AreEqual(null, c4.AutoIncrementStep);
-            Assert.AreEqual(null, c4.DefaultValue);
             Assert.AreEqual(false, c4.IsAutoIncrement);
             Assert.AreEqual(true, c4.IsNullable);
             Assert.AreEqual(null, c4.Length);
@@ -342,7 +338,6 @@ namespace NMigrations.Test
             Assert.AreEqual(SqlTypes.NVarChar, c5.DataType);
             Assert.AreEqual(null, c5.AutoIncrementSeed);
             Assert.AreEqual(null, c5.AutoIncrementStep);
-            Assert.AreEqual(null, c5.DefaultValue);
             Assert.AreEqual(false, c5.IsAutoIncrement);
             Assert.AreEqual(true, c5.IsNullable);
             Assert.AreEqual(64, c5.Length);
@@ -356,7 +351,6 @@ namespace NMigrations.Test
             Assert.AreEqual(SqlTypes.Decimal, c6.DataType);
             Assert.AreEqual(null, c6.AutoIncrementSeed);
             Assert.AreEqual(null, c6.AutoIncrementStep);
-            Assert.AreEqual(null, c6.DefaultValue);
             Assert.AreEqual(false, c6.IsAutoIncrement);
             Assert.AreEqual(true, c6.IsNullable);
             Assert.AreEqual(null, c6.Length);

@@ -29,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\bin\Release\NMigrations.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -43,6 +44,7 @@
     <Compile Include="Constraint.cs" />
     <Compile Include="Core\AfterMigrationEventArgs.cs" />
     <Compile Include="Core\AfterSqlEventArgs.cs" />
+    <Compile Include="DefaultConstraint.cs" />
     <Compile Include="Insert.cs" />
     <Compile Include="MigrationDirection.cs" />
     <Compile Include="ObjectExtensions.cs" />

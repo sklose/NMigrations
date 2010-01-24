@@ -389,5 +389,32 @@ namespace NMigrations.Test
             Assert.AreEqual(1, sql.Length);
             Assert.AreEqual("CREATE INDEX [MyIndex] ON [Customers] ([Firstname]);", sql[0]);
         }
+
+        /// <summary>
+        /// Checks that the appropriate SQL commands are generated for dropping a
+        /// column that has a default value.
+        /// </summary>
+        [TestMethod]
+        public void DatabaseModel4Test()
+        {
+            Database db = new Database(new MockMigrationContext(Target));
+            var t = db.AlterTable("Customers");
+            t.AlterColumn("NewColumn").DropDefault();
+            t.DropColumn("NewColumn");
+
+            string[] sql = Target.GenerateSqlCommands(db).ToArray();
+            Assert.AreEqual(2, sql.Length);
+            Assert.AreEqual(
+                "DECLARE @NewColumnDefaultName VARCHAR(MAX);" + Environment.NewLine +
+                "SELECT @NewColumnDefaultName = o2.name " +
+                "FROM syscolumns c " +
+                "JOIN sysobjects o ON c.id = o.id " +
+                "JOIN sysobjects o2 ON c.cdefault = o2.id " +
+                "WHERE o.name = 'Customers' AND c.name = 'NewColumn';" + Environment.NewLine +
+                "EXEC('ALTER TABLE [Customers] DROP CONSTRAINT ' + @NewColumnDefaultName);", 
+                sql[0]
+            );
+            Assert.AreEqual("ALTER TABLE [Customers] DROP COLUMN [NewColumn];", sql[1]);
+        }
     }
 }

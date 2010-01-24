@@ -208,13 +208,36 @@ namespace NMigrations.Test
         }
 
         /// <summary>
-        /// Checks that the <see cref="Default"/> method stores the default value.
+        /// Checks that the <see cref="Default"/> method creates a <see cref="DefaultConstraint"/>
+        /// in the migration steps queue.
         /// </summary>
         [TestMethod]
         public void DefaultTest()
         {
             Target.Default("MyDefaultValue");
-            Assert.AreEqual("MyDefaultValue", Target.DefaultValue);
+            Assert.AreEqual(2 /* table + default */, Target.Table.Database.MigrationSteps.Count);
+            var defaultConstraint = Target.Table.Database.MigrationSteps.ToArray()[1] as DefaultConstraint;
+
+            Assert.AreEqual(Target.Table.Name, defaultConstraint.Table.Name);
+            Assert.AreEqual(Target.Name, defaultConstraint.ColumnName);
+            Assert.AreEqual(Modifier.Add, defaultConstraint.Modifier);
+            Assert.AreEqual("MyDefaultValue", defaultConstraint.Value);
+        }
+
+        /// <summary>
+        /// Checks that the <see cref="DropDefault"/> method creates a <see cref="DefaultConstraint"/>
+        /// in the migration steps queue.
+        /// </summary>
+        [TestMethod]
+        public void DropDefaultTest()
+        {
+            Target.DropDefault();
+            Assert.AreEqual(2 /* table + default */, Target.Table.Database.MigrationSteps.Count);
+            var defaultConstraint = Target.Table.Database.MigrationSteps.ToArray()[1] as DefaultConstraint;
+
+            Assert.AreEqual(Target.Table.Name, defaultConstraint.Table.Name);
+            Assert.AreEqual(Target.Name, defaultConstraint.ColumnName);
+            Assert.AreEqual(Modifier.Drop, defaultConstraint.Modifier);
         }
 
         /// <summary>
@@ -297,7 +320,6 @@ namespace NMigrations.Test
             Assert.IsFalse(Target.IsAutoIncrement);
             Assert.IsNull(Target.AutoIncrementSeed);
             Assert.IsNull(Target.AutoIncrementStep);
-            Assert.IsNull(Target.DefaultValue);
             Assert.IsNull(Target.Length);
             Assert.IsNull(Target.NewName);
             Assert.IsNull(Target.Precision);

@@ -66,6 +66,14 @@ namespace NMigrations.Sql
         string GetUniqueConstraintName(string tableName, string[] columnNames);
 
         /// <summary>
+        /// Builds the name for a default constraint.
+        /// </summary>
+        /// <param name="tableName">Name of the table.</param>
+        /// <param name="columnName">The column name.</param>
+        /// <returns>The default constraint name.</returns>
+        string GetDefaultConstraintName(string tableName, string columnName);
+
+        /// <summary>
         /// Builds the name for an index.
         /// </summary>
         /// <param name="tableName">Name of the table.</param>

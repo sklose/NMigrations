@@ -267,6 +267,37 @@ namespace NMigrations
         }
 
         /// <summary>
+        /// Adds the default <see cref="Constraint"/> to this <see cref="Table"/>.
+        /// </summary>
+        /// <param name="name">The constraint name.</param>
+        /// <param name="columnName">The name of the column that has the defaul constraint.</param>
+        /// <param name="value">The default value.</param>
+        /// <returns>The default constraint.</returns>
+        public DefaultConstraint AddDefaultConstraint(string name, string columnName, object value)
+        {
+            var c = new DefaultConstraint(this, name, Modifier.Add)
+            {
+                ColumnName = columnName,
+                Value = value
+            };
+
+            Database.MigrationSteps.Enqueue(c);
+            return c;
+        }
+
+        /// <summary>
+        /// Adds the default <see cref="Constraint"/> to this <see cref="Table"/>.
+        /// </summary>
+        /// <param name="columnName">The name of the column that has the defaul constraint.</param>
+        /// <param name="value">The default value.</param>
+        /// <returns>The default constraint.</returns>
+        public DefaultConstraint AddDefaultConstraint(string columnName, object value)
+        {
+            string name = Database.Context.SqlProvider.GetDefaultConstraintName(Name, columnName);
+            return AddDefaultConstraint(name, columnName, value);
+        }
+
+        /// <summary>
         /// Adds the unique <see cref="Constraint"/> to this <see cref="Table"/>.
         /// </summary>
         /// <param name="columnName">The name of the column that needs to be unique.</param>
@@ -319,9 +350,84 @@ namespace NMigrations
         /// Drops the <see cref="Constraint"/> with the specified <paramref name="name"/>.
         /// </summary>
         /// <param name="name">The constraint's name.</param>
-        public void DropConstraint(string name)
+        /// <returns>The constraint.</returns>
+        public Constraint DropConstraint(string name)
         {
-            Database.MigrationSteps.Enqueue(new Constraint(this, name, Modifier.Drop));
+            var c = new Constraint(this, name, Modifier.Drop);
+            Database.MigrationSteps.Enqueue(c);
+            return c;
+        }
+
+        /// <summary>
+        /// Drops the <see cref="PrimaryKeyConstraint"/> with the specified <paramref name="name"/>.
+        /// </summary>
+        /// <param name="name">The constraint's name.</param>
+        /// <returns>The constraint.</returns>
+        public PrimaryKeyConstraint DropPrimaryKeyConstraint(string name)
+        {
+            var c = new PrimaryKeyConstraint(this, name, Modifier.Drop);
+            Database.MigrationSteps.Enqueue(c);
+            return c;
+        }
+
+        /// <summary>
+        /// Drops the <see cref="PrimaryKeyConstraint"/>.
+        /// </summary>
+        /// <returns>The constraint.</returns>
+        public PrimaryKeyConstraint DropPrimaryKeyConstraint()
+        {
+            return DropPrimaryKeyConstraint(null);
+        }
+
+        /// <summary>
+        /// Drops the <see cref="ForeignKeyConstraint"/> with the specified <paramref name="name"/>.
+        /// </summary>
+        /// <param name="name">The constraint's name.</param>
+        /// <returns>The constraint.</returns>
+        public ForeignKeyConstraint DropForeignKeyConstraint(string name)
+        {
+            var c = new ForeignKeyConstraint(this, name, Modifier.Drop);
+            Database.MigrationSteps.Enqueue(c);
+            return c;
+        }
+
+        /// <summary>
+        /// Drops the <see cref="UniqueConstraint"/> with the specified <paramref name="name"/>.
+        /// </summary>
+        /// <param name="name">The constraint's name.</param>
+        /// <returns>The constraint.</returns>
+        public UniqueConstraint DropUniqueConstraint(string name)
+        {
+            var c = new UniqueConstraint(this, name, Modifier.Drop);
+            Database.MigrationSteps.Enqueue(c);
+            return c;
+        }
+
+        /// <summary>
+        /// Drops the <see cref="DefaultConstraint"/> with the specified <paramref name="name"/>.
+        /// </summary>
+        /// <param name="name">The constraint's name.</param>
+        /// <returns>The constraint.</returns>
+        public DefaultConstraint DropDefaultConstraint(string name)
+        {
+            var c = new DefaultConstraint(this, name, Modifier.Drop);
+            Database.MigrationSteps.Enqueue(c);
+            return c;
+        }
+
+        /// <summary>
+        /// Drops the <see cref="DefaultConstraint"/> of the specified <paramref name="columnName"/>.
+        /// </summary>
+        /// <param name="columnName">Name of the column.</param>
+        /// <returns>The constraint.</returns>
+        public DefaultConstraint DropDefaultConstraintByColumnName(string columnName)
+        {
+            var c = new DefaultConstraint(this, null, Modifier.Drop)
+            {
+                ColumnName = columnName
+            };
+            Database.MigrationSteps.Enqueue(c);
+            return c;
         }
 
         /// <summary>
