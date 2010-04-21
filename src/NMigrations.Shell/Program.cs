@@ -128,9 +128,6 @@ namespace NMigrations.Shell
             {
                 engine.Migrate(arguments.Version.Value);
             }
-            
-
-            Console.ReadKey();
         }
 
         #endregion

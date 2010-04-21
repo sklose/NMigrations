@@ -99,7 +99,7 @@ namespace NMigrations
         NVarChar,
 
         /// <summary>
-        /// A unicode string of maixium length.
+        /// A unicode string of maximum length.
         /// </summary>
         NVarCharMax,
 
@@ -141,6 +141,21 @@ namespace NMigrations
         /// <summary>
         /// A time offset.
         /// </summary>
-        TimeSpan
+        TimeSpan,
+
+        /// <summary>
+        /// Binary data of fixed length.
+        /// </summary>
+        Binary,
+
+        /// <summary>
+        /// Binary data of variable length.
+        /// </summary>
+        VarBinary,
+
+        /// <summary>
+        /// Binary data of maximum length.
+        /// </summary>
+        VarBinaryMax
     }
 }

@@ -174,10 +174,7 @@ namespace NMigrations.Sql.SqlServer
                     else
                         return "DECIMAL";
                 case SqlTypes.Currency:
-                    if (scale != null && precision != null)
-                        return string.Format("MONEY({0}, {1})", scale, precision);
-                    else
-                        return "MONEY";
+                     return "MONEY";
                 case SqlTypes.Boolean:
                     return "BIT";
                 case SqlTypes.Char:
@@ -220,6 +217,18 @@ namespace NMigrations.Sql.SqlServer
                     return "TIMESTAMP";
                 case SqlTypes.TimeSpan:
                     return "DATETIMEOFFSET";
+                case SqlTypes.Binary:
+                    if (length != null)
+                        return string.Format("BINARY({0})", length);
+                    else
+                        return "BINARY";
+                case SqlTypes.VarBinary:
+                    if (length != null)
+                        return string.Format("VARBINARY({0})", length);
+                    else
+                        return "VARBINARY";
+                case SqlTypes.VarBinaryMax:
+                    return "VARBINARY(MAX)";
             }
 
             return null;

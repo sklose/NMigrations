@@ -179,8 +179,8 @@ namespace NMigrations.Test
             DoCheck("MONEY");
 
             type = SqlTypes.Currency;
-            length = null; scale = 7; precision = 5;            
-            DoCheck("MONEY(7, 5)");
+            length = null; scale = 7; precision = 5;
+            DoCheck("MONEY"); // Issue #8081, MONEY doesn't support scale/precision
 
             type = SqlTypes.Date;
             length = scale = precision = null;
@@ -265,6 +265,24 @@ namespace NMigrations.Test
             type = SqlTypes.TimeStamp;
             length = scale = precision = null;
             DoCheck("TIMESTAMP");
+
+            type = SqlTypes.Binary;
+            scale = precision = null;
+            length = 32;
+            DoCheck("BINARY(32)");
+
+            type = SqlTypes.Binary;
+            length = scale = precision = null;
+            DoCheck("BINARY");
+
+            type = SqlTypes.VarBinary;
+            scale = precision = null;
+            length = 128;
+            DoCheck("VARBINARY(128)");
+
+            type = SqlTypes.VarBinaryMax;
+            length = scale = precision = null;
+            DoCheck("VARBINARY(MAX)");
         }
 
         /// <summary>

@@ -118,6 +118,18 @@ namespace NMigrations.Sql.MySql
                     return "TIMESTAMP";
                 case SqlTypes.TimeSpan:
                     return "DATETIMEOFFSET";
+                case SqlTypes.Binary:
+                    if (length != null)
+                        return string.Format("BINARY({0})", length);
+                    else
+                        return "BINARY";
+                case SqlTypes.VarBinary:
+                    if (length != null)
+                        return string.Format("VARBINARY({0})", length);
+                    else
+                        return "VARBINARY";
+                case SqlTypes.VarBinaryMax:
+                    return "VARBINARY(MAX)";
             }
 
             return null;
