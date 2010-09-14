@@ -20,6 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using NMigrations.Sql;
+
 namespace NMigrations
 {
     /// <summary>
@@ -387,7 +389,7 @@ namespace NMigrations
         public ForeignKeyConstraint DropForeignKeyConstraint(string name)
         {
             var c = new ForeignKeyConstraint(this, name, Modifier.Drop);
-            Database.MigrationSteps.Enqueue(c);
+            Database.MigrationSteps.EnqueueBefore(c, (e => e == this));
             return c;
         }
 
@@ -399,7 +401,7 @@ namespace NMigrations
         public UniqueConstraint DropUniqueConstraint(string name)
         {
             var c = new UniqueConstraint(this, name, Modifier.Drop);
-            Database.MigrationSteps.Enqueue(c);
+            Database.MigrationSteps.EnqueueBefore(c, (e => e == this));
             return c;
         }
 
@@ -411,7 +413,7 @@ namespace NMigrations
         public DefaultConstraint DropDefaultConstraint(string name)
         {
             var c = new DefaultConstraint(this, name, Modifier.Drop);
-            Database.MigrationSteps.Enqueue(c);
+            Database.MigrationSteps.EnqueueBefore(c, (e => e == this));
             return c;
         }
 
@@ -426,7 +428,7 @@ namespace NMigrations
             {
                 ColumnName = columnName
             };
-            Database.MigrationSteps.Enqueue(c);
+            Database.MigrationSteps.EnqueueBefore(c, (e => e == this));
             return c;
         }
 

@@ -52,5 +52,42 @@ namespace NMigrations.Sql
                 queue.Enqueue(tmp.Dequeue());
             }
         }
+
+        /// <summary>
+        /// Enqueues the specified <paramref name="element"/> before the first element that
+        /// matches the specified <paramref name="condition"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the queue's elements.</typeparam>
+        /// <param name="queue">The queue.</param>
+        /// <param name="element">The new element.</param>
+        /// <param name="condition">The condition.</param>
+        public static void EnqueueBefore<T>(this Queue<T> queue, T element, System.Predicate<T> condition)
+        {
+            Queue<T> tmp = new Queue<T>();
+
+            //
+            // Copy items to new queue and insert new item
+            //
+            bool inserted = false;
+            while (queue.Count > 0)
+            {
+                T t = queue.Dequeue();
+                if (!inserted && condition(t))
+                {
+                    tmp.Enqueue(element);
+                    inserted = true;
+                }
+
+                tmp.Enqueue(t);
+            }
+
+            //
+            // Copy back to original queue
+            //
+            while (tmp.Count > 0)
+            {
+                queue.Enqueue(tmp.Dequeue());
+            }
+        }
     }
 }

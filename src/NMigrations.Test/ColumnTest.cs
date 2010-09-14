@@ -233,7 +233,7 @@ namespace NMigrations.Test
         {
             Target.DropDefault();
             Assert.AreEqual(2 /* table + default */, Target.Table.Database.MigrationSteps.Count);
-            var defaultConstraint = Target.Table.Database.MigrationSteps.ToArray()[1] as DefaultConstraint;
+            var defaultConstraint = Target.Table.Database.MigrationSteps.ToArray()[0] as DefaultConstraint;
 
             Assert.AreEqual(Target.Table.Name, defaultConstraint.Table.Name);
             Assert.AreEqual(Target.Name, defaultConstraint.ColumnName);

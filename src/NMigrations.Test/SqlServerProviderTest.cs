@@ -434,5 +434,27 @@ namespace NMigrations.Test
             );
             Assert.AreEqual("ALTER TABLE [Customers] DROP COLUMN [NewColumn];", sql[1]);
         }
+
+        /// <summary>
+        /// Checks that the appropriate SQL commands are generated for dropping a
+        /// column that has a default value.
+        /// </summary>
+        /// <remarks>
+        /// This test relates to a bug report claiming that the two SQL commands
+        /// are generated in the wrong order.
+        /// </remarks>
+        [TestMethod]
+        public void DatabaseModel5Test()
+        {
+            Database db = new Database(new MockMigrationContext(Target));
+            var t = db.AlterTable("Supersessions");
+            t.DropForeignKeyConstraint("FK_Supersession_Client");
+            t.DropColumn("ClientID");
+
+            string[] sql = Target.GenerateSqlCommands(db).ToArray();
+            Assert.AreEqual(2, sql.Length);
+            Assert.AreEqual("ALTER TABLE [Supersessions] DROP CONSTRAINT [FK_Supersession_Client];", sql[0]);
+            Assert.AreEqual("ALTER TABLE [Supersessions] DROP COLUMN [ClientID];", sql[1]);            
+        }
     }
 }
