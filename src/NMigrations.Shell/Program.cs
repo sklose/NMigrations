@@ -49,12 +49,6 @@ namespace NMigrations.Shell
                 Environment.Exit(-1);
             };
 
-
-            //
-            // Print information
-            //
-            WriteInformation();
-
             //
             // Read command line arguments
             //
@@ -65,8 +59,17 @@ namespace NMigrations.Shell
             }
             catch (FormatException)
             {
+                WriteInformation();
                 WriteUsage();
                 Environment.Exit(-1);
+            }
+
+            //
+            // Print information
+            //
+            if (!arguments.Silent)
+            {
+                WriteInformation();
             }
             
             //
@@ -95,7 +98,10 @@ namespace NMigrations.Shell
             //
             engine.BeforeMigration += delegate(object sender, BeforeMigrationEventArgs e)
             {
-                Console.WriteLine("{0} {1}...", e.Version, (e.Direction == MigrationDirection.Up ? "UP" : "DOWN"));
+                if (!arguments.Silent)
+                {
+                    Console.WriteLine("{0} {1}...", e.Version, (e.Direction == MigrationDirection.Up ? "UP" : "DOWN"));
+                }
             };
 
             engine.BeforeSql += delegate(object sender, BeforeSqlEventArgs e)
@@ -111,10 +117,13 @@ namespace NMigrations.Shell
 
             engine.AfterMigration += delegate(object sender, AfterMigrationEventArgs e)
             {
-                Console.WriteLine();
-                Console.WriteLine("Migration finished succcessful: {0}", e.Success);
-                Console.WriteLine(new string('=', Console.WindowWidth));
-                Console.WriteLine();
+                if (!arguments.Silent || !e.Success)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Migration finished succcessful: {0}", e.Success);
+                    Console.WriteLine(new string('=', Console.WindowWidth));
+                    Console.WriteLine();
+                }
             };
 
             //
@@ -157,7 +166,7 @@ namespace NMigrations.Shell
         private static void WriteInformation()
         {
             var version = typeof(Program).Assembly.GetName().Version;            
-            Console.WriteLine("NMigrations v{0}, (c) 2009 Sebastian Klose", version);
+            Console.WriteLine("NMigrations v{0}, (c) 2010 Sebastian Klose", version);
             Console.WriteLine();
         }
 

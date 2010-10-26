@@ -117,6 +117,18 @@ namespace NMigrations.Shell
             set;
         }
 
+        /// <summary>
+        /// Gets or sets the value of the "silent" command line option.
+        /// </summary>
+        /// <value><c>true</c> if silent; otherwise, <c>false</c>.</value>
+        [OptionName("silent", false)]
+        [OptionDescription("Suppresses the copyright banner on startup and all messages except errors and user inputs")]
+        public bool Silent
+        {
+            get;
+            set;
+        }
+
         #endregion
     }
 }
