@@ -68,7 +68,7 @@ namespace NMigrations.Sql.SqlServer
         {
             yield return string.Format("EXEC sp_Rename '{0}.{1}', '{2}', 'COLUMN';",
                 EscapeTableName(column.Table.Name),
-                EscapeColumnName(column.Name), EscapeColumnName(column.NewName)
+                EscapeColumnName(column.Name), column.NewName
             );
         }
 

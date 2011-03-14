@@ -389,7 +389,7 @@ namespace NMigrations.Test
             string[] sql = Target.GenerateSqlCommands(db).ToArray();
             Assert.AreEqual(2, sql.Length);
             Assert.AreEqual("ALTER TABLE [Customers] ADD [Firstname] NVARCHAR(32) NOT NULL;", sql[0]);
-            Assert.AreEqual("EXEC sp_Rename '[Customers].[Lastname]', '[Surname]', 'COLUMN';", sql[1]);
+            Assert.AreEqual("EXEC sp_Rename '[Customers].[Lastname]', 'Surname', 'COLUMN';", sql[1]);
         }
 
         /// <summary>
