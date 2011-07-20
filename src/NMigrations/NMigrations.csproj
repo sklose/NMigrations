@@ -67,6 +67,7 @@
     <Compile Include="Core\AfterSqlEventArgs.cs" />
     <Compile Include="DefaultConstraint.cs" />
     <Compile Include="Insert.cs" />
+    <Compile Include="LiteralSql.cs" />
     <Compile Include="MigrationDirection.cs" />
     <Compile Include="ObjectExtensions.cs" />
     <Compile Include="SqlStatement.cs" />
