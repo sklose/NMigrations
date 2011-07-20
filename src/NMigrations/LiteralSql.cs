@@ -24,11 +24,19 @@ namespace NMigrations
    /// </summary>
    public class LiteralSql
    {
+       /// <summary>
+       /// Initializes a new instance of the <see cref="LiteralSql"/> class.
+       /// </summary>
+       /// <param name="text">The text.</param>
       public LiteralSql(string text)
       {
          this.Text = text;
       }
 
+      /// <summary>
+      /// Gets or sets the SQL fragment.
+      /// </summary>
+      /// <value>The SQL fragment.</value>
       public string Text
       {
          get;

@@ -991,13 +991,13 @@ namespace NMigrations.Sql
             {
                 return ((bool)value) ? "1" : "0";
             }
-
+            //
             // LiteralSql (no escaping).
+            //
             else if (value is LiteralSql)
             {
                 return ((LiteralSql)value).Text;
             }
-
             //
             // Strings and anything else
             //
